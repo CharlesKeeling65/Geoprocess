@@ -9,20 +9,21 @@
 """
 
 
-import rasterio as rio
 from pathlib import PosixPath
+
 import numpy as np
-from geopandas.geoseries import GeoSeries
 import pandas as pd
+import rasterio as rio
+from geopandas.geoseries import GeoSeries
 
 
 def tif_extent(meta: dict):
 
     return [
         meta["transform"][2],
-        meta["transform"][5] + meta["height"] * meta["transform"][4],
         meta["transform"][2] + meta["width"] * meta["transform"][0],
         meta["transform"][5],
+        meta["transform"][5] + meta["height"] * meta["transform"][4],
     ]
 
 

@@ -9,6 +9,7 @@
 """
 
 
+from typing import List
 import rasterio as rio
 from pathlib import PosixPath
 import numpy as np
@@ -57,8 +58,8 @@ def polygon2raster(
 def zonal_stat(
     geometry: gpd.GeoSeries,
     id: pd.Series,
-    rst_col_name: str,
-    rst_data: np.ndarray,
+    rst_col_name: List[str],
+    rst_data: List[np.ndarray],
     rst_reference: str | PosixPath,
     stat_method: str = "sum",
 ) -> gpd.GeoDataFrame:
@@ -71,9 +72,9 @@ def zonal_stat(
     Args:
         geometry (gpd.GeoSeries): A GeoSeries containing the polygon geometries.
         id (pd.Series): A Series containing the IDs for each polygon.
-        rst_col_name (str): The name of the column in the output GeoDataFrame that will
+        rst_col_name (List[str]): A list of column names in the output GeoDataFrame that will
             store the calculated statistics.
-        rst_data (np.ndarray): A NumPy array containing the raster data.
+        rst_data (List[np.ndarray]): A list of NumPy arrays containing the raster data.
         rst_reference (str | PosixPath): The reference path or string for the raster data.
         stat_method (str, optional): The aggregation method to be used for calculating
             the statistics. Defaults to "sum".
@@ -89,12 +90,11 @@ def zonal_stat(
 
     out_shp = gpd.GeoDataFrame({"id": id, "geometry": geometry})
     id_rst = polygon2raster(geometry, id, np.int32, rst_reference)
-    if id_rst.shape != rst_data.shape:
-        raise ValueError(
-            "The shape of the rasterized polygon does not match the shape of the raster data."
-        )
-
-    data = pd.DataFrame({"id": id_rst.flatten(), rst_col_name: rst_data.flatten()})
+    for rst in rst_data:
+        if rst.shape != id_rst.shape:
+            raise ValueError(
+                "The shape of the rasterized polygon does not match the shape of the raster data."
+            )
 
     aggregation_funcs = {
         "sum": np.nansum,
@@ -104,8 +104,14 @@ def zonal_stat(
         "median": np.nanmedian,
     }
     if stat_method in aggregation_funcs:
-        aggregation_func = aggregation_funcs[stat_method]
-        sum_data = data.groupby("id")[rst_col_name].apply(aggregation_func)
+        data_dict = {"id": id_rst.flatten()}
+        methed_dict = {}
+        for col_name, rst in zip(rst_col_name, rst_data):
+            data_dict[col_name] = rst.flatten()
+            methed_dict[col_name] = stat_method
+        data = pd.DataFrame(data_dict)
+        # aggregation_func = aggregation_funcs[stat_method]
+        sum_data = data.groupby("id").agg(methed_dict)
     else:
         raise ValueError(
             "Invalid method. Supported methods: 'sum', 'min', 'max', 'mean', 'median'."
