@@ -90,7 +90,8 @@ def aggregate_raster(
         A tuple containing the aggregated raster data and metadata.
     """
 
-    data, ref_meta = input_raster_data_tuple
+    data, meta = input_raster_data_tuple
+    ref_meta = meta.copy()
     data = np.where(data == ref_meta["nodata"], np.nan, data)  # replace nodata with nan
 
     in_height = ref_meta["height"]
