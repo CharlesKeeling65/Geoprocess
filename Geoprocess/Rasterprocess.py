@@ -9,20 +9,21 @@
 """
 
 
-import rasterio as rio
 from pathlib import PosixPath
+
 import numpy as np
-from geopandas.geoseries import GeoSeries
 import pandas as pd
+import rasterio as rio
+from geopandas.geoseries import GeoSeries
 
 
 def tif_extent(meta: dict):
 
     return [
         meta["transform"][2],
-        meta["transform"][5] + meta["height"] * meta["transform"][4],
         meta["transform"][2] + meta["width"] * meta["transform"][0],
         meta["transform"][5],
+        meta["transform"][5] + meta["height"] * meta["transform"][4],
     ]
 
 
@@ -89,7 +90,8 @@ def aggregate_raster(
         A tuple containing the aggregated raster data and metadata.
     """
 
-    data, ref_meta = input_raster_data_tuple
+    data, meta = input_raster_data_tuple
+    ref_meta = meta.copy()
     data = np.where(data == ref_meta["nodata"], np.nan, data)  # replace nodata with nan
 
     in_height = ref_meta["height"]
