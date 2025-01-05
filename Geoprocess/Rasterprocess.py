@@ -196,7 +196,7 @@ def downscale_raster_by_weight(
         ]
         * weight_data
     )
-    downscale_data = np.where(np.isnan(data), nodata, downscale_data)
+    downscale_data = np.where(np.isnan(downscale_data), nodata, downscale_data)
 
     meta = weight_meta.copy()
     meta.update({"nodata": nodata, "dtype": dtype})

@@ -4,14 +4,14 @@ setup(
     name="geoprocess",
     version="1.0.0",
     description="A package for geospatial processing",
-    author="Your Name",
-    author_email="your@email.com",
+    author="Charles Keeling",
+    author_email="charleskeeling65@163.com",
     packages=find_packages(),
     install_requires=[
         "numpy",
         "pandas",
         "geopandas",
-        "shapely",
+        "pathlib",
         "rasterio",
     ],
     classifiers=[

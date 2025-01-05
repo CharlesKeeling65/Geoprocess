@@ -51,6 +51,7 @@ def add_scalebar(
     scalebar_length: int = 100000,
     major_step: int = 2,
     bar_height: int = 50000,
+    fontsize: int = 2.5,
 ):
     x0, x1, y0, y1 = ax.get_extent()
 
@@ -80,20 +81,20 @@ def add_scalebar(
         bar_x0,
         bar_y0 + bar_height + bar_height * bar_offset[2],
         "0",
-        fontsize=3,
+        fontsize=fontsize,
         ha="center",
     )
     ax.text(
         bar_x0 + scalebar_length,
         bar_y0 + bar_height + bar_height * bar_offset[2],
         f"{scalebar_length/1000:.0f}",
-        fontsize=3,
+        fontsize=fontsize,
         ha="center",
     )
     ax.text(
         bar_x0 + scalebar_length + interval_length / 2,
         bar_y0 + bar_height + bar_height * bar_offset[2],
         "km",
-        fontsize=3,
+        fontsize=fontsize,
         ha="left",
     )
