@@ -9,12 +9,14 @@
 """
 
 
+from ast import main
 from typing import List
 import rasterio as rio
 from pathlib import PosixPath
 import numpy as np
 import geopandas as gpd
 import pandas as pd
+from rasterio import features
 
 
 def polygon2raster(
@@ -44,7 +46,7 @@ def polygon2raster(
         t = r.transform
         meta = r.meta.copy()
     shapes = zip(geometry, value)
-    raster = rio.features.rasterize(
+    raster = features.rasterize(
         shapes=shapes, out_shape=(a, b), fill=nd, transform=t, dtype=dtype
     )
     meta.update({"dtype": dtype, "nodata": nd})
@@ -120,3 +122,7 @@ def zonal_stat(
     out_shp = out_shp.merge(sum_data, on="id", how="left")
 
     return out_shp
+
+
+if __name__ == "__main__":
+    pass

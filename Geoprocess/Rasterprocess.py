@@ -126,6 +126,7 @@ def aggregate_raster(
         "max": np.nanmax,
         "mean": np.nanmean,
         "median": np.nanmedian,
+        "mode": lambda x: pd.Series(x.flatten()).mode()[0],
     }
     if method in aggregation_funcs:
         aggregation_func = aggregation_funcs[method]
