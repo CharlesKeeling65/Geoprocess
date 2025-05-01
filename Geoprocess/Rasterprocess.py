@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import rasterio as rio
 from geopandas.geoseries import GeoSeries
+from sympy import N
 
 
 def tif_extent(meta: dict):
@@ -148,6 +149,7 @@ def aggregate_raster(
 def downscale_raster_by_weight(
     input_raster_data_tuple: tuple[np.ndarray, dict],
     weight_raster_data_tuple: tuple[np.ndarray, dict],
+    scale_factor: int = None,
 ) -> tuple[np.ndarray, dict]:
     """Downscale a raster by weight.
 
@@ -178,8 +180,8 @@ def downscale_raster_by_weight(
     weight_height = weight_meta["height"]
     weight_width = weight_meta["width"]
     weight_transform = weight_meta["transform"]
-
-    scale_factor = int(in_transform.a / weight_transform.a)
+    if scale_factor is None:
+        scale_factor = int(np.ceil(weight_transform.a / in_transform.a))
 
     extra_rows = int(in_height * scale_factor - weight_height)
     extra_cols = int(in_width * scale_factor - weight_width)
